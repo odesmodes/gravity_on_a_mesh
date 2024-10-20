@@ -6,6 +6,8 @@ Created on Mon Oct  7 16:42:15 2024
 @author: vedhasyamuvva
 """
 
+# Section 2 Part 1: Distributing particles according to a multi-variate Gaussian with a chosen center, semimajor axis a, and axis ratios b/a and c/a. 
+
 import numpy as np
 import matplotlib.pyplot as plt
 

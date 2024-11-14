@@ -21,6 +21,6 @@ arr = InitializePoints.initializeGaussianPoints(center, a, ba, ca)
 InitializePoints.plotInitialPoints(arr)
 
 testpoint = np.array([0,0,0])
-print(InitializePoints.calculateDensityOfPoint(testpoint,a,ba,ca, arr))
+#print(InitializePoints.calculateDensityOfPoint(testpoint,a,ba,ca, arr))
 
-#InitializePoints.PlotDensityField(center, a, ba, ca, arr)
+InitializePoints.PlotDensityField(center, a, ba, ca, arr, 'x', 32)

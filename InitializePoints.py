@@ -88,54 +88,71 @@ Inputs:
     the density of of the each cell arranged in a somewhat convoluted fashion that needs to be fixed
 
 """  
-def CreateDensityField(center, a, ba, ca, arr):
-    N = 32
+def CreateDensityField(center, a, ba, ca, arr, grid_size):
+    #FOR DEBUGGING PURPOSES:
+    DEBUG = False
     #Create a a NxNxN Grid of points to calculate the density for 
-    x = np.linspace(center[0] - a, center[0] + a, N)
-    y = np.linspace(center[1] - ba * a, center[1] + ba * a, N)
-    z = np.linspace(center[2] - ca * a, center[2] + ca * a, N)
-
+    
+    # print("center: ", center)
+    # print("arr: ", arr)
+    x = np.linspace(-grid_size/2, grid_size/2, grid_size+1, endpoint=True) + center[0]
+    y = np.linspace(-grid_size/2, grid_size/2, grid_size+1, endpoint=True) + center[1]
+    z = np.linspace(-grid_size/2, grid_size/2, grid_size+1, endpoint=True) + center[2]
+    # print("x: ", x, np.shape(x))
+    # print("y: ", y, np.shape(y))
+    # print("z: ", z, np.shape(z))
+    
     #Initialize Density Field
-    densityField = np.zeros((N, N, N))
-
-    La = a/N
-    Lb = ba*a/N
-    Lc = ca*a/N
+    
+    densityField = np.zeros((grid_size+1, grid_size+1, grid_size+1))
+    # print("initialized Density Field: ", densityField, np.shape(densityField))
     
     # Calculate the addition to the density field from each individual particle
     for ptcl in arr:
         #Find the grid point closest to the particle
+        
+        # print("particle: ", ptcl)
         xi = np.searchsorted(x, ptcl[0])
         yi = np.searchsorted(y, ptcl[1])
         zi = np.searchsorted(z, ptcl[2])
-        
-        
+        if DEBUG: print("xi,yi,zi: ", xi,yi,zi)
         #Check to see which vertices of the box will matter
         if xi == 0: xarr = np.array([xi])
-        elif xi == N: xarr = np.array([xi-1])
+        elif xi == grid_size+1: xarr = np.array([xi-1])
         else: xarr = np.array([xi-1,xi])
+        if DEBUG: print("xarr: ", xarr)
         
         if yi == 0: yarr = np.array([yi])
-        elif yi >= N: yarr = np.array([yi-1])
+        elif yi >= grid_size+1: yarr = np.array([yi-1])
         else: yarr = np.array([yi-1,yi])
+        if DEBUG: print("yarr: ", yarr)
         
         if zi == 0: zarr = np.array([zi])
-        elif zi >= N: zarr = np.array([zi-1])
+        elif zi >= grid_size+1: zarr = np.array([zi-1])
         else: zarr = np.array([zi-1,zi])
+        if DEBUG: print("zarr: ", zarr)
+        
         
         #Check the vertices of the box around it
         for i in xarr:
             for j in yarr:
                 for k in zarr:
-                    point = np.array([x[i],y[i],z[i]])
+                    if DEBUG: print("ijk: ", i, j, k)
+                    point = np.array([x[i],y[j],z[k]])
+                    if DEBUG: print("ptcl: ", ptcl)
+                    if DEBUG: print("point: ", point)
                     distance = (ptcl-point)
-                    dx = max(0, La - distance[0])
-                    dy = max(0, La - distance[0])
-                    dz = max(0, La - distance[0])
+                    if DEBUG: print("distance: ", distance)
+                    dx = max(0, 1 - np.abs(distance[0]))
+                    dy = max(0, 1 - np.abs(distance[1]))
+                    dz = max(0, 1 - np.abs(distance[2]))
                     
-                    densityField[i,j,k] += dx*dy*dz
+                    densityField[i,j,k] += np.abs(dx*dy*dz)
+                    if DEBUG: print("dx,dy,dz: ", dx, dy, dz)
+                    if DEBUG: print("dv: ", np.abs(dx*dy*dz))
+                    # print("dx, dy, dz: ", dx,dy,dz)
         
-    return densityField
+    return densityField,x,y,z
 
 
 """ Plots the Density field for a given axis and value
@@ -165,18 +182,75 @@ Inputs:
 
 """  
 
-def PlotDensityField(center, a, ba, ca, arr, axis, value):
-    densityField = CreateDensityField(center, a, ba, ca, arr)
-    
-    if axis == 'z':
-        plt.imshow(densityField[:, :, value], origin='lower', cmap='hot')
-        plt.title(f'Density Slice at Z={value}')
-    elif axis == 'y':
-        plt.imshow(densityField[:, value, :], origin='lower', cmap='hot')
-        plt.title(f'Density Slice at Y={value}')
+def PlotDensityField2D(densityField, x,y,z, axis, value):
+    if axis == 'y':
+        extent = [x[0], x[-1], x[0], x[-1]]  # Define the physical coordinates for the plot
+        plt.imshow(densityField[:, value, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
+        plt.title(f'Density Slice at Y={y[value]}')
+        plt.ylabel('X-axis')
+        plt.xlabel('Z-axis')
     elif axis == 'x':
-        plt.imshow(densityField[value, :, :], origin='lower', cmap='hot')
-        plt.title(f'Density Slice at X={value}')
+        extent = [x[0], x[-1], x[0], x[-1]]
+        plt.imshow(densityField[value, :, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
+        plt.title(f'Density Slice at X={x[value]}')
+        plt.ylabel('Y-axis')
+        plt.xlabel('Z-axis')
+        
+    elif axis == 'z':
+        extent = [x[0], x[-1], x[0], x[-1]]
+        plt.imshow(densityField[:, :, value], origin='lower', cmap='inferno', extent=extent, aspect='auto')
+        plt.title(f'Density Slice at Z={z[value]}')
+        plt.ylabel('X-axis')
+        plt.xlabel('Y-axis')
+            
+        
     plt.colorbar(label='Density')
+    
+    plt.show()
+
+""" Plots the Density field for a given axis and value
+ 
+Inputs:
+ ------
+ center : NumPy array
+     The point at which the points have been centered around
+
+ a : NumPy value
+     The length of the semimajor axis
+
+ ba : NumPy value
+     The axis ratio of the second axis to the semimajor axis
+
+ ca : NumPy value
+     The axis ratio of the third axis to the semimajor axis
+ 
+ arr : NumPy array
+     the array of points previously generated randomly
+
+ axis : string
+     The chosen axis
+ 
+ value : NumPy value
+     The value at which the slice is taken
+
+"""  
+
+def PlotDensityField1D(densityField, x,y,z, axis, value1, value2):
+    if axis == 'xy':
+        plt.plot(z,densityField[value1, value2, :])
+        plt.title(f"Density field with x = {value1} and y = {value2}")
+        plt.xlabel("Z-axis")
+        plt.ylabel("Density")
+    elif axis == 'yz':
+        plt.plot(x,densityField[:, value1, value2])
+        plt.title(f"Density field with y = {value1} and z = {value2}")
+        plt.xlabel("X-axis")
+        plt.ylabel("Density")
+    elif axis == 'zx':
+        plt.plot(y,densityField[value2, :, value1])
+        plt.title(f"Density field with x = {value2} and z = {value1}")    
+        plt.xlabel("Y-axis")
+        plt.ylabel("Density")
+        
     
     plt.show()

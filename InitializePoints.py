@@ -61,6 +61,7 @@ def plotInitialPoints(arr):
     ax.set_zlabel('Z-axis')
     plt.title('3D Scatter Plot of Gaussian Distributed Points')
     
+    plt.savefig("basicpoints.png")
     plt.show()
 
 """ Calculates the Density field for every point and returns the density field
@@ -81,12 +82,23 @@ Inputs:
  
  arr : NumPy array
      the array of points previously generated randomly
-
+     
+ grid_size : NumPy value
+     the number of desired points on the mesh grid
+     
  Returns:
  -------
  densityField: Numpy array
     the density of of the each cell arranged in a somewhat convoluted fashion that needs to be fixed
 
+ x: Numpy array
+    array of vertices on the x-axis
+   
+ y: Numpy array
+    array of vertices on the y-axis
+    
+ z: Numpy array
+    array of vertices on the z-axis
 """  
 def CreateDensityField(center, a, ba, ca, arr, grid_size):
     #FOR DEBUGGING PURPOSES:
@@ -159,20 +171,17 @@ def CreateDensityField(center, a, ba, ca, arr, grid_size):
  
 Inputs:
  ------
- center : NumPy array
-     The point at which the points have been centered around
+ densityField : NumPy array
+     the calculated density field of the particle distribution
 
- a : NumPy value
-     The length of the semimajor axis
-
- ba : NumPy value
-     The axis ratio of the second axis to the semimajor axis
-
- ca : NumPy value
-     The axis ratio of the third axis to the semimajor axis
- 
- arr : NumPy array
-     the array of points previously generated randomly
+ x: Numpy array
+    array of vertices on the x-axis
+   
+ y: Numpy array
+    array of vertices on the y-axis
+    
+ z: Numpy array
+    array of vertices on the z-axis
 
  axis : string
      The chosen axis
@@ -205,34 +214,33 @@ def PlotDensityField2D(densityField, x,y,z, axis, value):
             
         
     plt.colorbar(label='Density')
-    
+    plt.savefig(f"2DDensityPlot{axis}_{value}.png")
     plt.show()
 
 """ Plots the Density field for a given axis and value
  
 Inputs:
  ------
- center : NumPy array
-     The point at which the points have been centered around
+ densityField : NumPy array
+     the calculated density field of the particle distribution
 
- a : NumPy value
-     The length of the semimajor axis
-
- ba : NumPy value
-     The axis ratio of the second axis to the semimajor axis
-
- ca : NumPy value
-     The axis ratio of the third axis to the semimajor axis
- 
- arr : NumPy array
-     the array of points previously generated randomly
+ x: Numpy array
+    array of vertices on the x-axis
+   
+ y: Numpy array
+    array of vertices on the y-axis
+    
+ z: Numpy array
+    array of vertices on the z-axis
 
  axis : string
-     The chosen axis
+     The chosen plane
  
- value : NumPy value
+ value1 : NumPy value
      The value at which the slice is taken
-
+     
+ value2 : NumPy value
+     The value at which the slice is taken
 """  
 
 def PlotDensityField1D(densityField, x,y,z, axis, value1, value2):
@@ -252,5 +260,5 @@ def PlotDensityField1D(densityField, x,y,z, axis, value1, value2):
         plt.xlabel("Y-axis")
         plt.ylabel("Density")
         
-    
+    plt.savefig(f"1DDensityPlot{axis}_{value1}_{value2}.png")
     plt.show()

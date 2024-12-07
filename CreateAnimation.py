@@ -28,14 +28,36 @@ velocities = np.zeros_like(particles)
 
 #PLACEHOLDER FUNCTION UNTIL PHI GETS CALCULATED
 def phi(x):
-    return (x**2)
+    return np.sum(x**2)
 
-def F(x):
+#def F(x):
     # Negative gradient of a potential function ONCE PROBLEM 3 is done
     #dphidx = (phi(x+dx,y,z) - phi(x-dx, y, z)) / (2*dx)
     #dphidy = 
     #dphidz = 
-    return -2 * x + 3
+   # return -2 * x + 3
+
+# Creating a function to calculate the gradient of the potential at position x with a step size for finite difference
+
+def gradient(phi, x, h=1e-5):
+
+	dim = len(x)
+	grad = np.zeros(dim)
+	
+	for i in range(dim): 
+		x_f = x.copy() # makes copies of x to avoid messing up our og x array
+		x_i = x.copy()
+		x_f[i] += h # add increments of h i.e. dx
+		x_i[i] -= h
+		grad[i] = (phi(x_f)-phi(x_i))/(2*h) # def of gradient
+	return grad
+
+# gradient function test
+x_test = np.array([1.0,2.0,3.0])
+grad_3D = gradient(phi, x_test)
+print("Gradient at", x_test, "is", grad_3D)
+
+
 
 velocities = dt/2 * F(particles)
 # THIS IS from the Verlet Method

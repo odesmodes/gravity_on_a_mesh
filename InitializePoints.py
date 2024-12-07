@@ -6,7 +6,19 @@ Created on Mon Oct  7 16:42:15 2024
 @author: vedhasyamuvva
 """
 
-# Section 2 Part 1: Distributing particles according to a multi-variate Gaussian with a chosen center, semimajor axis a, and axis ratios b/a and c/a. 
+"""
+______________________________________________________________________________
+Includes the methods to create initial random points and calculate the Density field
+______________________________________________________________________________
+
+methods:
+    initializeGaussianPoints: Creates a Gaussian Distribution of points
+    plotInitialPoints: plots particles on a 3D scatter plot
+    CreateDensityField: Calculates density fields for given particle distribution
+    PlotDensityField2D: Plots Density field on a 2D colormap
+    PlotDensityField1D: Plots Density field along given axes
+    PlotTestFields: Plots predetermined test plots for a density field
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -64,6 +76,8 @@ def plotInitialPoints(arr):
     plt.savefig("basicpoints.png")
     plt.show()
 
+
+
 """ Calculates the Density field for every point and returns the density field
  
 Inputs:
@@ -103,24 +117,20 @@ Inputs:
 def CreateDensityField(center, arr, grid_size):
     #FOR DEBUGGING PURPOSES:
     DEBUG = False
-    #Create a a NxNxN Grid of points to calculate the density for 
-    
-    # print("center: ", center)
-    # print("arr: ", arr)
+
+    #Create a NxNxN mesh grid to be overlayed over particles
     x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
     y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
     z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]
-    # print("x: ", x, np.shape(x))
-    # print("y: ", y, np.shape(y))
-    # print("z: ", z, np.shape(z))
+
     
     #Initialize Density Field
-    
     densityField = np.zeros((grid_size, grid_size, grid_size))
-    # print("initialized Density Field: ", densityField, np.shape(densityField))
     
+
     # Calculate the addition to the density field from each individual particle
     for ptcl in arr:
+        
         #Find the grid point closest to the particle
         
         # print("particle: ", ptcl)
@@ -128,7 +138,8 @@ def CreateDensityField(center, arr, grid_size):
         yi = np.searchsorted(y, ptcl[1])
         zi = np.searchsorted(z, ptcl[2])
         if DEBUG: print("xi,yi,zi: ", xi,yi,zi)
-        #Check to see which vertices of the box will matter
+        
+        #Check if the particle is out of bounds
         if xi == 0: xarr = np.array([xi])
         elif xi == grid_size: xarr = np.array([xi-1])
         else: xarr = np.array([xi-1,xi])
@@ -144,25 +155,34 @@ def CreateDensityField(center, arr, grid_size):
         else: zarr = np.array([zi-1,zi])
         if DEBUG: print("zarr: ", zarr)
         
+        # L is the size of each cell in the mesh grid
         L = 1/grid_size
-        #Check the vertices of the box around it
+        
+        #Calculate the density addition at each vertex determined above
         for i in xarr:
             for j in yarr:
                 for k in zarr:
                     if DEBUG: print("ijk: ", i, j, k)
+                    
                     point = np.array([x[i],y[j],z[k]])
+                    
                     if DEBUG: print("ptcl: ", ptcl)
                     if DEBUG: print("point: ", point)
+                    
                     distance = (ptcl-point)
+                    
                     if DEBUG: print("distance: ", distance)
+                    
+                    #Overlap in cubical cloud in each direction
                     dx = max(0, L - np.abs(distance[0]))
                     dy = max(0, L - np.abs(distance[1]))
                     dz = max(0, L - np.abs(distance[2]))
                     
+                    #The addition to the density at the vertex from the particle
                     densityField[i,j,k] += np.abs(dx*dy*dz)
+                    
                     if DEBUG: print("dx,dy,dz: ", dx, dy, dz)
                     if DEBUG: print("dv: ", np.abs(dx*dy*dz))
-                    # print("dx, dy, dz: ", dx,dy,dz)
         
     return densityField,x,y,z
 
@@ -190,34 +210,36 @@ Inputs:
      The value at which the slice is taken
 
 """  
-
 def PlotDensityField2D(densityField, x,y,z, axis, value):
     if axis == 'y':
         extent = [x[0], x[-1], x[0], x[-1]]  # Define the physical coordinates for the plot
         plt.imshow(densityField[:, value, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
-        plt.title(f'Density Slice at Y={y[value]}')
+        plt.title(f'Density Slice at Y={round(y[value],3)}')
         plt.ylabel('X-axis')
         plt.xlabel('Z-axis')
     elif axis == 'x':
         extent = [x[0], x[-1], x[0], x[-1]]
         plt.imshow(densityField[value, :, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
-        plt.title(f'Density Slice at X={x[value]}')
+        plt.title(f'Density Slice at X={round(x[value],3)}')
         plt.ylabel('Y-axis')
         plt.xlabel('Z-axis')
         
     elif axis == 'z':
         extent = [x[0], x[-1], x[0], x[-1]]
         plt.imshow(densityField[:, :, value], origin='lower', cmap='inferno', extent=extent, aspect='auto')
-        plt.title(f'Density Slice at Z={z[value]}')
+        plt.title(f'Density Slice at Z={round(z[value],3)}')
         plt.ylabel('X-axis')
         plt.xlabel('Y-axis')
             
         
     plt.colorbar(label='Density')
-    plt.savefig(f"TestDensityPlots/2DDensityPlot{axis}_{value}.png")
+    plt.savefig(f"TestDensityPlots/2DDensityPlot{axis}_{round(value,3)}.png")
     plt.show()
 
-""" Plots the Density field for a given axis and value
+
+
+
+""" Plots the Density field for a given plane and value
  
 Inputs:
  ------
@@ -233,7 +255,7 @@ Inputs:
  z: Numpy array
     array of vertices on the z-axis
 
- axis : string
+ plane : string
      The chosen plane
  
  value1 : NumPy value
@@ -243,25 +265,46 @@ Inputs:
      The value at which the slice is taken
 """  
 
-def PlotDensityField1D(densityField, x,y,z, axis, value1, value2):
-    if axis == 'xy':
+def PlotDensityField1D(densityField, x,y,z, plane, value1, value2):
+    if plane == 'xy':
         plt.plot(z,densityField[value1, value2, :])
-        plt.title(f"Density field with x = {value1} and y = {value2}")
+        plt.title(f"Density field with x = {round(value1,3)} and y = {round(value2,3)}")
         plt.xlabel("Z-axis")
         plt.ylabel("Density")
-    elif axis == 'yz':
+    elif plane == 'yz':
         plt.plot(x,densityField[:, value1, value2])
-        plt.title(f"Density field with y = {value1} and z = {value2}")
+        plt.title(f"Density field with y = {round(value1,3)} and z = {round(value2,3)}")
         plt.xlabel("X-axis")
         plt.ylabel("Density")
-    elif axis == 'zx':
+    elif plane == 'zx':
         plt.plot(y,densityField[value2, :, value1])
-        plt.title(f"Density field with x = {value2} and z = {value1}")    
+        plt.title(f"Density field with x = {round(value2,3)} and z = {round(value1, 3)}")    
         plt.xlabel("Y-axis")
         plt.ylabel("Density")
         
-    plt.savefig(f"TestDensityPlots/1DDensityPlot{axis}_{value1}_{value2}.png")
+    plt.savefig(f"TestDensityPlots/1DDensityPlot{plane}_{round(value1,3)}_{round(value2,3)}.png")
     plt.show()
+
+
+""" Creates 1D and 2D plots of the density fields around the center point
+ 
+Inputs:
+ ------
+ densityField : NumPy array
+     the calculated density field of the particle distribution
+
+ x: Numpy array
+    array of vertices on the x-axis
+   
+ y: Numpy array
+    array of vertices on the y-axis
+    
+ z: Numpy array
+    array of vertices on the z-axis
+
+ grid_size : NumPy value
+     The size of the grid
+"""  
 
 def PlotTestFields(densityField, x,y,z, grid_size):
     PlotDensityField1D(densityField, x,y,z,'xy', int(grid_size/2),int(grid_size/2))

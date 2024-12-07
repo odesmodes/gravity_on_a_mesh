@@ -30,13 +30,6 @@ velocities = np.zeros_like(particles)
 def phi(x):
     return np.sum(x**2)
 
-#def F(x):
-    # Negative gradient of a potential function ONCE PROBLEM 3 is done
-    #dphidx = (phi(x+dx,y,z) - phi(x-dx, y, z)) / (2*dx)
-    #dphidy = 
-    #dphidz = 
-   # return -2 * x + 3
-
 # Creating a function to calculate the gradient of the potential at position x with a step size for finite difference
 
 def gradient(phi, x, h=1e-5):
@@ -52,11 +45,22 @@ def gradient(phi, x, h=1e-5):
 		grad[i] = (phi(x_f)-phi(x_i))/(2*h) # def of gradient
 	return grad
 
-# gradient function test
-x_test = np.array([1.0,2.0,3.0])
-grad_3D = gradient(phi, x_test)
-print("Gradient at", x_test, "is", grad_3D)
+# Creating a function to calculate the force on each particle at position x
+# Force is just negative the gradient of the potential
 
+def F(x):
+	forces = np.zeros_like(x)
+	
+	for i, x0  in enumerate(x):
+		forces[i] = -gradient(phi,x0)
+	return forces
+
+# test
+x_test = np.array([1.0,2.0,3.0])
+grad_test = gradient(phi, x_test)
+forces_test = F(np.array([x_test]))
+print("Gradient at", x_test, "is", grad_test)
+print("Force at", x_test, "is", forces_test)
 
 
 velocities = dt/2 * F(particles)

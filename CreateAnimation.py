@@ -12,27 +12,34 @@ import InitializePoints
 
 # Parameters
 center = [0,0,0]
-a = 4
-ba = 2
+a = .2
+ba = 1
 ca = 1
 N = 32**3
 grid_size = 32
-
-
-particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
-# Assume velocities = v_1/2 are at rest
-velocities = np.zeros_like(particles)
-# Since particles start at rest, x0 = x1
-
 dt = 0.1
 
-# THIS NEEDS TO BE UPDATED ONCE WE HAVE FINISHED PROBLEM 3
+particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
+densityField, x,y,z = InitializePoints.CreateDensityField(center, particles, grid_size)
+
+# Assume velocities = v0 are at rest
+# Then  v1/2 = dt/2 * F(x) 
+velocities = np.zeros_like(particles)
+
+#PLACEHOLDER FUNCTION UNTIL PHI GETS CALCULATED
+def phi(x):
+    return (x**2)
+
 def F(x):
     # Negative gradient of a potential function ONCE PROBLEM 3 is done
+    #dphidx = (phi(x+dx,y,z) - phi(x-dx, y, z)) / (2*dx)
+    #dphidy = 
+    #dphidz = 
     return -2 * x + 3
 
+velocities = dt/2 * F(particles)
 # THIS IS from the Verlet Method
-def xnext(x, v, dt=0.1): 
+def xnext(x, v, dt=dt): 
     v_new = v + F(x) * dt
     x_new = x + v_new * dt
     return x_new, v_new
@@ -53,7 +60,7 @@ ax.set_ylim(-30, 30)
 ax.set_zlim(-15, 15)
 
 # Animate
-ani = animation.FuncAnimation(fig, update, frames=5, interval=1, blit=False)
+ani = animation.FuncAnimation(fig, update, frames=1, interval=100, blit=False)
 plt.show()
 
 

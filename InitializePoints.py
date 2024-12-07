@@ -100,23 +100,23 @@ Inputs:
  z: Numpy array
     array of vertices on the z-axis
 """  
-def CreateDensityField(center, a, ba, ca, arr, grid_size):
+def CreateDensityField(center, arr, grid_size):
     #FOR DEBUGGING PURPOSES:
     DEBUG = False
     #Create a a NxNxN Grid of points to calculate the density for 
     
     # print("center: ", center)
     # print("arr: ", arr)
-    x = np.linspace(-grid_size/2, grid_size/2, grid_size+1, endpoint=True) + center[0]
-    y = np.linspace(-grid_size/2, grid_size/2, grid_size+1, endpoint=True) + center[1]
-    z = np.linspace(-grid_size/2, grid_size/2, grid_size+1, endpoint=True) + center[2]
+    x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
+    y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
+    z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]
     # print("x: ", x, np.shape(x))
     # print("y: ", y, np.shape(y))
     # print("z: ", z, np.shape(z))
     
     #Initialize Density Field
     
-    densityField = np.zeros((grid_size+1, grid_size+1, grid_size+1))
+    densityField = np.zeros((grid_size, grid_size, grid_size))
     # print("initialized Density Field: ", densityField, np.shape(densityField))
     
     # Calculate the addition to the density field from each individual particle
@@ -130,21 +130,21 @@ def CreateDensityField(center, a, ba, ca, arr, grid_size):
         if DEBUG: print("xi,yi,zi: ", xi,yi,zi)
         #Check to see which vertices of the box will matter
         if xi == 0: xarr = np.array([xi])
-        elif xi == grid_size+1: xarr = np.array([xi-1])
+        elif xi == grid_size: xarr = np.array([xi-1])
         else: xarr = np.array([xi-1,xi])
         if DEBUG: print("xarr: ", xarr)
         
         if yi == 0: yarr = np.array([yi])
-        elif yi >= grid_size+1: yarr = np.array([yi-1])
+        elif yi >= grid_size: yarr = np.array([yi-1])
         else: yarr = np.array([yi-1,yi])
         if DEBUG: print("yarr: ", yarr)
         
         if zi == 0: zarr = np.array([zi])
-        elif zi >= grid_size+1: zarr = np.array([zi-1])
+        elif zi >= grid_size: zarr = np.array([zi-1])
         else: zarr = np.array([zi-1,zi])
         if DEBUG: print("zarr: ", zarr)
         
-        
+        L = 1/grid_size
         #Check the vertices of the box around it
         for i in xarr:
             for j in yarr:
@@ -155,9 +155,9 @@ def CreateDensityField(center, a, ba, ca, arr, grid_size):
                     if DEBUG: print("point: ", point)
                     distance = (ptcl-point)
                     if DEBUG: print("distance: ", distance)
-                    dx = max(0, 1 - np.abs(distance[0]))
-                    dy = max(0, 1 - np.abs(distance[1]))
-                    dz = max(0, 1 - np.abs(distance[2]))
+                    dx = max(0, L - np.abs(distance[0]))
+                    dy = max(0, L - np.abs(distance[1]))
+                    dz = max(0, L - np.abs(distance[2]))
                     
                     densityField[i,j,k] += np.abs(dx*dy*dz)
                     if DEBUG: print("dx,dy,dz: ", dx, dy, dz)
@@ -214,7 +214,7 @@ def PlotDensityField2D(densityField, x,y,z, axis, value):
             
         
     plt.colorbar(label='Density')
-    plt.savefig(f"2DDensityPlot{axis}_{value}.png")
+    plt.savefig(f"TestDensityPlots/2DDensityPlot{axis}_{value}.png")
     plt.show()
 
 """ Plots the Density field for a given axis and value
@@ -260,5 +260,14 @@ def PlotDensityField1D(densityField, x,y,z, axis, value1, value2):
         plt.xlabel("Y-axis")
         plt.ylabel("Density")
         
-    plt.savefig(f"1DDensityPlot{axis}_{value1}_{value2}.png")
+    plt.savefig(f"TestDensityPlots/1DDensityPlot{axis}_{value1}_{value2}.png")
     plt.show()
+
+def PlotTestFields(densityField, x,y,z, grid_size):
+    PlotDensityField1D(densityField, x,y,z,'xy', int(grid_size/2),int(grid_size/2))
+    PlotDensityField1D(densityField, x,y,z,'yz', int(grid_size/2),int(grid_size/2))
+    PlotDensityField1D(densityField, x,y,z,'zx', int(grid_size/2),int(grid_size/2))
+    
+    PlotDensityField2D(densityField, x,y,z, "x", int(grid_size/2))
+    PlotDensityField2D(densityField, x,y,z, "y", int(grid_size/2))
+    PlotDensityField2D(densityField, x,y,z, "z", int(grid_size/2))

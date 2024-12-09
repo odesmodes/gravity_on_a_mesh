@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.animation as animation
 import InitializePoints
+import TestPhi
 
 # Parameters
 center = [0,0,0]
@@ -24,44 +25,38 @@ densityField, x,y,z = InitializePoints.CreateDensityField(center, particles, gri
 
 # Assume velocities = v0 are at rest
 # Then  v1/2 = dt/2 * F(x) 
-velocities = np.zeros_like(particles)
+
+# Define an array for velocities that is the same size as the particles array
+velocities = np.zeros_like(particles) 
 
 #PLACEHOLDER FUNCTION UNTIL PHI GETS CALCULATED
-def phi(x):
-    return np.sum(x**2)
+def test_phi(x):
+    return np.sum(x**2, axis = -1)
 
 # Creating a function to calculate the gradient of the potential at position x with a step size for finite difference
-
-def gradient(phi, x, h=1e-5):
-
-	dim = len(x)
-	grad = np.zeros(dim)
-	
-	for i in range(dim): 
-		x_f = x.copy() # makes copies of x to avoid messing up our og x array
-		x_i = x.copy()
-		x_f[i] += h # add increments of h i.e. dx
-		x_i[i] -= h
-		grad[i] = (phi(x_f)-phi(x_i))/(2*h) # def of gradient
-	return grad
+# This is because in order to find the velocities we first need to find the acceleration, which we can get from F = ma = -grad(phi)
+def gradient(phi, spacing = 1/32):
+    grad = np.gradient(phi, spacing)
+    return np.array([grad[0],grad[1],grad[2]])
 
 # Creating a function to calculate the force on each particle at position x
 # Force is just negative the gradient of the potential
 
-def F(x):
-	forces = np.zeros_like(x)
-	
-	for i, x0  in enumerate(x):
-		forces[i] = -gradient(phi,x0)
-	return forces
+def F(particles, gradient, spacing = 1/32):
+
+    indices = (particles/spacing).astype(int) # Calculate the grid indices for each particle's position and normalize
+    indices = np.clip(indices, 0, gradient.shape[:-3][0] - 1) # Constrain the indices so that they don't go outside the boundaries of the gradient field
+    forces = -gradient[indices[:, 0], indices[:, 1], indices[:, 2]] # Append gradient values at each axis for the corresponding indices and multiply by a negative 
+    return forces
 
 # test
-x_test = np.array([1.0,2.0,3.0])
-grad_test = gradient(phi, x_test)
-forces_test = F(np.array([x_test]))
-print("Gradient at", x_test, "is", grad_test)
-print("Force at", x_test, "is", forces_test)
-
+x_test = np.array([[[1,2,3], [1,2,3], [1,2,3]], [[1,2,3], [1,2,3], [1,2,3]], [[1,2,3], [1,2,3], [1,2,3]]])
+phi_test = TestPhi.TestPhi2()
+grad_test = gradient(phi_test)
+forces_test = F(particles, grad_test)
+print("Phi", phi_test)
+print("Gradient", grad_test)
+print("Force", forces_test)
 
 velocities = dt/2 * F(particles)
 # THIS IS from the Verlet Method

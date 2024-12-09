@@ -51,8 +51,9 @@ Inputs:
 def initializeGaussianPoints(center, a, ba, ca, N = 32**3):
     mean = np.array(center)
     cov = np.diag(np.array([a**2, (a*ba)**2, (a*ca)**2]))
-    
-    points = np.random.multivariate_normal(mean, cov, N)
+    points = np.empty((N,1,3))
+    for i in range (N):
+        points[i] = np.random.multivariate_normal(mean, cov, 1)
     return points
 
 """ Plots the points generated with initialize Gaussian Points

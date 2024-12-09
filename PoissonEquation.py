@@ -6,18 +6,20 @@ import matplotlib.pyplot as plt
 
 def PoissonsEq(density):
  '''Takes density as an input, solves Poissons eq using Fourier Transformed density, inverse Fourier Transforms result to return solution for potential'''
+#Take fft of density 
  density_dft = sp.fft.fftn(density)
- potential_dft = np.empty((33,33,33),dtype = 'complex_')
+ potential_dft = np.empty((32,32,32),dtype = 'complex_')
  for x in range(1,len(density_dft)):
   for y in range(1,len(density_dft[x])):
    for z in range(1,len(density_dft[x][y])):
     potential_dft[x][y][z]=1/(2*(np.cos(2*x*np.pi/len(density_dft))+np.cos(2*y*np.pi/len(density_dft[x]))+np.cos(2*z*np.pi/len(density_dft[x][y])) -3))*4*np.pi*density_dft[x][y][z]
-#  print('potential dft: '+str(potential_dft))
+  print('potential dft: '+str(potential_dft))
  potential_ift = sp.fft.ifftn(potential_dft)
  potential=potential_ift.real
  print('potential: '+str(potential))
 
  return potential
+
  
 def PlotPotential2D(potential, x,y,z, axis, value):
     if axis == 'y':
@@ -45,32 +47,40 @@ def PlotPotential2D(potential, x,y,z, axis, value):
     plt.show()
 
 
-'''
 
 def IsolatedMass(density):
-"""Solves Poisson's equation for an isolated mass distribution using a convolution of the Fourier transforms of the mass m"""
+ """Solves Poisson's equation for an isolated mass distribution using a convolution of the Fourier transforms of the mass m"""
 #create extended mesh to isolate mass 
- iso_den= density.resize((66,66,66)
+ iso_den= np.resize(density,(64,64,64))
 #create Green's function with restricted range
- for x in range(1,33):
-  for y in range(1,33):
-   for z in range(1,33):
-    G[x][y][z]=1/np.sqrt(x**2 + y**2+ z**2)
+ G=np.zeros((64,64,64))
+#Greens' function on 32*3 grid 
  
-    
-  G[0][0][0]=1
- 
+ G32=np.zeros((32,32,32))
+#loop over points except origin and set to 1/|r| 
+ for x in list(range(1,16)) +list(range(17,32)):
+  for y in list(range(1,16)) +list(range(17,32)):
+   for z in list(range(1,16)) +list(range(17,32)):
+    G[x][y][z]= 1/np.sqrt((16-x)**2 + (16-y)**2+(16-z)**2)   
+#set origin to 1    
+    G32[x][y][z]=G[x][y][z]
+ G[16][16][16]=1
+ G32[16][16][16]=1
+ print(G32[16][16][16])
+ print(G32[15][15][15])
+ print(G32)
 #FT Green's function
- G_dft= sp.fft.fftn
+ G_dft= sp.fft.fftn(G)
  
 #
 #FT density
- density_ft=sp.fft.fftn(density) 
-  
+ density_ft=sp.fft.fftn(iso_den) 
+ potential_dft = G_dft*density_ft
+ potential_ift = sp.fft.ifftn(potential_dft)
+ potential=potential_ift.real
  #
- return potential
- 
+ return G32
+
  
 
- '''
- 
+

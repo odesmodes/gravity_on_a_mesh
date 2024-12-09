@@ -15,6 +15,8 @@ methods:
     initializeGaussianPoints: Creates a Gaussian Distribution of points
     plotInitialPoints: plots particles on a 3D scatter plot
     CreateDensityField: Calculates density fields for given particle distribution
+    CreateSolidSphereDensityField: Creates theoretical constant density field for a spherical shell
+    CreateSphericalShellDensityField: Creates theoretical constant density field for a solid sphere
     PlotDensityField2D: Plots Density field on a 2D colormap
     PlotDensityField1D: Plots Density field along given axes
     PlotTestFields: Plots predetermined test plots for a density field
@@ -82,7 +84,7 @@ def plotInitialPoints(arr):
     ax.set_zlabel('Z-axis')
     plt.title('3D Scatter Plot of Gaussian Distributed Points')
     
-    plt.savefig("basicpoints.png")
+    #plt.savefig("basicpoints.png")
     plt.show()
 
 
@@ -112,7 +114,7 @@ Inputs:
  Returns:
  -------
  densityField: Numpy array
-    the density of of the each cell arranged in a somewhat convoluted fashion that needs to be fixed
+    the density of each cell
 
  x: Numpy array
     array of vertices on the x-axis
@@ -195,6 +197,75 @@ def CreateDensityField(center, arr, grid_size):
         
     return densityField,x,y,z
 
+""" Calculates a theoretical Density field with a spherical shell of constant density
+ 
+Inputs:
+ ------
+ grid_size : NumPy value
+     the number of desired points on the mesh grid
+     
+ radius_sq : NumPy value
+     the squared value of the desired radius of the sphere
+
+ tol : NumPy value
+     the tolerance or half of the width of the spherical shell
+     
+ Returns:
+ -------
+ densityField: Numpy array
+    the densityField for a spherical shell of constant density
+
+"""  
+def CreateSphericalShellDensityField(grid_size = 32, radius_sq = 0.3**2, tol = 0.02):
+    densityField = np.zeros((grid_size, grid_size, grid_size))
+    x = np.linspace(-0.5, 0.5, grid_size, endpoint=True)
+    y = np.linspace(-0.5, 0.5, grid_size, endpoint=True)
+    z = np.linspace(-0.5, 0.5, grid_size, endpoint=True)
+    
+    
+    for i in range (grid_size):
+        for j in range (grid_size):
+            for k in range (grid_size):
+                dist = x[i] **2 + y[j]**2 + z[k]**2
+                if ( dist >= radius_sq - tol and dist <= radius_sq + tol):
+                    densityField[i,j,k] = 1
+
+    return densityField
+
+""" Calculates a theoretical Density field for a sphere of constant density
+ 
+Inputs:
+ ------
+ grid_size : NumPy value
+     the number of desired points on the mesh grid
+     
+ radius_sq : NumPy value
+     the squared value of the desired radius of the sphere
+
+ tol : NumPy value
+     the tolerance or half of the width of the spherical shell
+     
+ Returns:
+ -------
+ densityField: Numpy array
+    the densityField for a spherical shell of constant density
+
+"""  
+def CreateSolidSphereDensityField(grid_size = 32, radius_sq = 0.3**2):
+    densityField = np.zeros((grid_size, grid_size, grid_size))
+    x = np.linspace(-0.5, 0.5, grid_size, endpoint=True)
+    y = np.linspace(-0.5, 0.5, grid_size, endpoint=True)
+    z = np.linspace(-0.5, 0.5, grid_size, endpoint=True)
+    
+    
+    for i in range (grid_size):
+        for j in range (grid_size):
+            for k in range (grid_size):
+                dist = x[i] **2 + y[j]**2 + z[k]**2
+                if (dist <= radius_sq):
+                    densityField[i,j,k] = 1
+
+    return densityField
 
 """ Plots the Density field for a given axis and value
  

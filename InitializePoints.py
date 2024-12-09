@@ -51,9 +51,17 @@ Inputs:
 def initializeGaussianPoints(center, a, ba, ca, N = 32**3):
     mean = np.array(center)
     cov = np.diag(np.array([a**2, (a*ba)**2, (a*ca)**2]))
-    points = np.empty((N,1,3))
-    for i in range (N):
-        points[i] = np.random.multivariate_normal(mean, cov, 1)
+    points = np.empty((N,3))
+    hasSpace = True
+    i = 0
+    while hasSpace:
+        point = np.random.multivariate_normal(mean, cov)
+        if (point[0] >= -0.5 and point[0] <= 0.5 and 
+            point[1] >= -0.5 and point[1] <= 0.5 and 
+            point[2] >= -0.5 and point[2] <= 0.5): 
+            points[i] = point
+            i += 1
+            if (i >= N): hasSpace = False
     return points
 
 """ Plots the points generated with initialize Gaussian Points
@@ -234,7 +242,7 @@ def PlotDensityField2D(densityField, x,y,z, axis, value):
             
         
     plt.colorbar(label='Density')
-    plt.savefig(f"TestDensityPlots/2DDensityPlot{axis}_{round(value,3)}.png")
+    #plt.savefig(f"TestDensityPlots/2DDensityPlot{axis}_{round(value,3)}.png")
     plt.show()
 
 
@@ -283,7 +291,7 @@ def PlotDensityField1D(densityField, x,y,z, plane, value1, value2):
         plt.xlabel("Y-axis")
         plt.ylabel("Density")
         
-    plt.savefig(f"TestDensityPlots/1DDensityPlot{plane}_{round(value1,3)}_{round(value2,3)}.png")
+    #plt.savefig(f"TestDensityPlots/1DDensityPlot{plane}_{round(value1,3)}_{round(value2,3)}.png")
     plt.show()
 
 

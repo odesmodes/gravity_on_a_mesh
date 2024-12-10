@@ -11,27 +11,6 @@ import matplotlib.animation as animation
 import InitializePoints
 import TestPhi
 
-# Parameters
-center = [0,0,0]
-a = .2
-ba = 1
-ca = 1
-N = 32**3
-grid_size = 32
-dt = 0.1
-
-particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
-densityField, x,y,z = InitializePoints.CreateDensityField(center, particles, grid_size)
-
-# Assume velocities = v0 are at rest
-# Then  v1/2 = dt/2 * F(x) 
-
-# Define an array for velocities that is the same size as the particles array
-velocities = np.zeros_like(particles) 
-
-#PLACEHOLDER FUNCTION UNTIL PHI GETS CALCULATED
-def test_phi(x):
-    return np.sum(x**2, axis = -1)
 
 # Creating a function to calculate the gradient of the potential at position x with a step size for finite difference
 # This is because in order to find the velocities we first need to find the acceleration, which we can get from F = ma = -grad(phi)
@@ -42,26 +21,55 @@ def gradient(phi, spacing = 1/32):
 # Creating a function to calculate the force on each particle at position x
 # Force is just negative the gradient of the potential
 
-def F(particles, gradient, spacing = 1/32):
-
-    indices = (particles/spacing).astype(int) # Calculate the grid indices for each particle's position and normalize
-    indices = np.clip(indices, 0, gradient.shape[:-3][0] - 1) # Constrain the indices so that they don't go outside the boundaries of the gradient field
-    forces = -gradient[indices[:, 0], indices[:, 1], indices[:, 2]] # Append gradient values at each axis for the corresponding indices and multiply by a negative 
+def F(particles, gradArr, spacing=1/32):
+    # Calculate the grid indices for each particle's position
+    indices = ((particles + 0.5) / spacing).astype(int)
+    
+    # Initialize forces array
+    forces = np.zeros_like(particles)
+    
+    # Check if indices are within valid bounds
+    in_bounds = (indices[:, 0] >= 0) & (indices[:, 0] < gradArr.shape[1]) & \
+                (indices[:, 1] >= 0) & (indices[:, 1] < gradArr.shape[2]) & \
+                (indices[:, 2] >= 0) & (indices[:, 2] < gradArr.shape[3])
+    
+    # Apply forces only to particles within bounds
+    valid_indices = indices[in_bounds]
+    forces[in_bounds] = -gradArr[:, valid_indices[:, 0], valid_indices[:, 1], valid_indices[:, 2]].T
+    
     return forces
 
-# test
-x_test = np.array([[[1,2,3], [1,2,3], [1,2,3]], [[1,2,3], [1,2,3], [1,2,3]], [[1,2,3], [1,2,3], [1,2,3]]])
-phi_test = TestPhi.TestPhi2()
-grad_test = gradient(phi_test)
-forces_test = F(particles, grad_test)
-print("Phi", phi_test)
-print("Gradient", grad_test)
-print("Force", forces_test)
+# Parameters
+center = [0,0,0]
+a = .2
+ba = 1
+ca = 1
+N = 32**3
+grid_size = 32
+dt = 0.001
 
-velocities = dt/2 * F(particles)
+particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 10)
+#densityField, x,y,z = InitializePoints.CreateDensityField(center, particles, grid_size)
+
+# Assume velocities = v0 are at rest
+# Then  v1/2 = dt/2 * F(x) 
+
+# Define an array for velocities that is the same size as the particles array
+#print("particles: ", np.shape(particles))
+velocities = np.zeros_like(particles) 
+
+phi = TestPhi.TestPhi2()
+velocities = dt/2 * F(particles, gradient(phi))
 # THIS IS from the Verlet Method
 def xnext(x, v, dt=dt): 
-    v_new = v + F(x) * dt
+    #RECALCULATE PHI
+    gradArr = gradient(phi)
+    # print("x: ", x, "v: ", v)
+    # print("rsq: ", np.linalg.norm(x))
+    # print("F: ", F(x,gradArr))
+    #Calculate gradArr with new distributio
+    v_new = v + F(x, gradArr) * dt
+    #print("x: ", np.shape(x), np.shape(v_new))
     x_new = x + v_new * dt
     return x_new, v_new
 
@@ -76,31 +84,11 @@ def update(frame):
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 scat = ax.scatter(particles[:, 0], particles[:, 1], particles[:, 2], label='Particles')
-ax.set_xlim(-15, 15)
-ax.set_ylim(-30, 30)
-ax.set_zlim(-15, 15)
+ax.set_xlim(-0.6, 0.6)
+ax.set_ylim(-0.6, 0.6)
+ax.set_zlim(-0.6, 0.6)
 
+ax.set_title("Exploring The Physics Of Gravitational Collapse")
 # Animate
-ani = animation.FuncAnimation(fig, update, frames=1, interval=100, blit=False)
+ani = animation.FuncAnimation(fig, update, frames=5, interval=100, blit=False)
 plt.show()
-
-
-
-#THIS IS THE pseudo code I started with 
-#For actual Verlet Method we will start all particles at rest
-#STEP 1 how to verlet method
-#STEP 2 how to turn it into an animation
-# x0 = particles
-# v12 = velocities
-# dt = 0.1
-
-# x1 = x0 + v12*dt = x0
-
-# #Loop this part:
-# vnew = v12 + F(x1)*dt
-# xnew = x1 + vnew*dt
-
-# THIS IS THE ACTUAL CODE FROM ABOVE
-# for i in range (5):
-#     x1, v12 = xnext(x1, v12, dt)
-#     print(x1)

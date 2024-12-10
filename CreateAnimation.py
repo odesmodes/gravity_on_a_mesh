@@ -35,9 +35,9 @@ def F(particles, gradArr, spacing=1/32):
     
     # Apply forces only to particles within bounds
     valid_indices = indices[in_bounds]
-    forces[in_bounds] = -gradArr[:, valid_indices[:, 0], valid_indices[:, 1], valid_indices[:, 2]].T
+    forces[in_bounds] = gradArr[:, valid_indices[:, 0], valid_indices[:, 1], valid_indices[:, 2]].T
     
-    return forces
+    return -forces
 
 # Parameters
 center = [0,0,0]
@@ -58,7 +58,7 @@ particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 10)
 #print("particles: ", np.shape(particles))
 velocities = np.zeros_like(particles) 
 
-phi = TestPhi.TestPhi4()
+phi = TestPhi.TestPhi4() # Phi for a mass in the center of the grid, expect the particles to accelerate towards the center
 velocities = dt/2 * F(particles, gradient(phi))
 # THIS IS from the Verlet Method
 def xnext(x, v, dt=dt): 
@@ -67,10 +67,18 @@ def xnext(x, v, dt=dt):
     # print("x: ", x, "v: ", v)
     # print("rsq: ", np.linalg.norm(x))
     # print("F: ", F(x,gradArr))
-    #Calculate gradArr with new distribution
-    v_new = v + F(x, gradArr) * dt/2
+    # Calculate gradArr with new distribution
+
+    # VERLET METHOD FROM WIKIPEDIA
+    F_old = F(x, gradArr)
+    x_new = x + v * dt + 0.5 * F_old * dt**2
+    gradArr_new = gradient(phi)
+    F_new = F(x_new, gradArr_new)
+    v_new = v + 0.5 * (F_old + F_new) * dt
+
+    #v_new = v + F(x, gradArr) * dt/2
     #print("x: ", np.shape(x), np.shape(v_new))
-    x_new = x + v_new * dt
+    #x_new = x + v_new * dt
     return x_new, v_new
 
 # Update for each frame, particles and velocities get updated

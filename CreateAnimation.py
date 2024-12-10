@@ -58,7 +58,7 @@ particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 10)
 #print("particles: ", np.shape(particles))
 velocities = np.zeros_like(particles) 
 
-phi = TestPhi.TestPhi2()
+phi = TestPhi.TestPhi4()
 velocities = dt/2 * F(particles, gradient(phi))
 # THIS IS from the Verlet Method
 def xnext(x, v, dt=dt): 
@@ -67,8 +67,8 @@ def xnext(x, v, dt=dt):
     # print("x: ", x, "v: ", v)
     # print("rsq: ", np.linalg.norm(x))
     # print("F: ", F(x,gradArr))
-    #Calculate gradArr with new distributio
-    v_new = v + F(x, gradArr) * dt
+    #Calculate gradArr with new distribution
+    v_new = v + F(x, gradArr) * dt/2
     #print("x: ", np.shape(x), np.shape(v_new))
     x_new = x + v_new * dt
     return x_new, v_new

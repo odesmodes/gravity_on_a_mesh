@@ -27,7 +27,7 @@ def PoissonsEq(density):
  
 #take real part of potential and return 
  potential=potential_ift.real
-  return potential
+ return potential
 
  
 def PlotPotential2D(potential, x,y,z, axis, value):

@@ -37,8 +37,8 @@ def F(particles, gradArr, spacing=1/32):
     # Apply forces only to particles within bounds
     valid_indices = indices[in_bounds]
     forces[in_bounds] = gradArr[:, valid_indices[:, 0], valid_indices[:, 1], valid_indices[:, 2]].T
-    
-    return forces
+     
+    return -forces
 
 # Parameters
 center = [0,0,0]
@@ -47,9 +47,9 @@ ba = 1
 ca = 1
 N = 32**3
 grid_size = 32
-dt = 0.1
+dt = 10
 
-particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 32**3)
+particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 15)
 densityField, _,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
 
 # Assume velocities = v0 are at rest

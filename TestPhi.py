@@ -75,7 +75,7 @@ def TestPhi3(grid_size, mass=1.0):
 
 import numpy as np
 
-def TestPhi4(grid_size=32, mass=100, softening=1e-3):    
+def TestPhi4(grid_size=32, mass=100, softening=1e-2):    
 
     # Also single mass in center potential take two 
     # Create a grid of coordinates

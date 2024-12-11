@@ -85,7 +85,8 @@ def IsolatedMass(density):
     if r2==0:
      G[x][y][z]=1
     else: 
-     G[x][y][z]=1/np.sqrt(r2)
+     epsilon = 1
+     G[x][y][z]=1/np.sqrt(r2 + epsilon**2) # To avoid infinite potentials 
 #set the iso_den to density value with in active region     
     if x<32 and y < 32 and z < 32: 
      iso_den[x][y][z]=density[x][y][z]   
@@ -97,7 +98,7 @@ def IsolatedMass(density):
  density_ft=sp.fft.fftn(iso_den) 
 
 #Define Potential FT array 
- potential_ft=np.zeros((64,64,64),dtype = 'complex_')
+ potential_ft=np.zeros((64,64,64),dtype = 'complex')
  
 #set potential ft to G_ft *density_ft 
  for x in range(0,64):
@@ -108,7 +109,7 @@ def IsolatedMass(density):
 #invert potential FT and take real part  
  potential_ift = sp.fft.ifftn(potential_ft)
  potential=potential_ift.real
- return potential[0:32,0:32,0:32]
+ return -potential[0:32,0:32,0:32]
 
 
 

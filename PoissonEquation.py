@@ -108,8 +108,7 @@ def IsolatedMass(density):
 #invert potential FT and take real part  
  potential_ift = sp.fft.ifftn(potential_ft)
  potential=potential_ift.real
-
- return potential
+ return potential[0:32,0:32,0:32]
 
 
 

@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.animation as animation
 import InitializePoints
 import TestPhi
+import PoissonEquation
 
 
 # Creating a function to calculate the gradient of the potential at position x with a step size for finite difference
@@ -37,7 +38,7 @@ def F(particles, gradArr, spacing=1/32):
     valid_indices = indices[in_bounds]
     forces[in_bounds] = gradArr[:, valid_indices[:, 0], valid_indices[:, 1], valid_indices[:, 2]].T
     
-    return -forces
+    return forces
 
 # Parameters
 center = [0,0,0]
@@ -46,10 +47,10 @@ ba = 1
 ca = 1
 N = 32**3
 grid_size = 32
-dt = 0.001
+dt = 0.1
 
-particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 10)
-#densityField, x,y,z = InitializePoints.CreateDensityField(center, particles, grid_size)
+particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 32**3)
+densityField, _,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
 
 # Assume velocities = v0 are at rest
 # Then  v1/2 = dt/2 * F(x) 
@@ -58,15 +59,16 @@ particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, 10)
 #print("particles: ", np.shape(particles))
 velocities = np.zeros_like(particles) 
 
-phi = TestPhi.TestPhi4() # Phi for a mass in the center of the grid, expect the particles to accelerate towards the center
+phi = PoissonEquation.IsolatedMass(densityField)
 velocities = dt/2 * F(particles, gradient(phi))
+
 # THIS IS from the Verlet Method
 def xnext(x, v, dt=dt): 
     #RECALCULATE PHI
+    densityField, _,_,_ = InitializePoints.CreateDensityField(center, x, grid_size)
+    phi = PoissonEquation.IsolatedMass(densityField)
     gradArr = gradient(phi)
-    # print("x: ", x, "v: ", v)
-    # print("rsq: ", np.linalg.norm(x))
-    # print("F: ", F(x,gradArr))
+    
     # Calculate gradArr with new distribution
 
     # VERLET METHOD FROM WIKIPEDIA

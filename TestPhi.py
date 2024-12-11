@@ -20,7 +20,7 @@ def TestPhi1(grid_size = 32, radius_sq = 0.3**2):
         for j in range (grid_size):
             for k in range (grid_size):
                 dist = x[i] **2 + y[j]**2 + z[k]**2
-                if ( dist <= radius_sq):
+                if (dist <= radius_sq):
                     phi[i,j,k] = dist
 
     return phi

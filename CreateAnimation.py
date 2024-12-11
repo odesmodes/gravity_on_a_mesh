@@ -101,4 +101,7 @@ ax.set_zlim(-0.6, 0.6)
 ax.set_title("Exploring The Physics Of Gravitational Collapse")
 # Animate
 ani = animation.FuncAnimation(fig, update, frames=5, interval=100, blit=False)
+ani.save('grav_collapse.mp4', fps=20, extra_args=['-vcodec', 'libx264'])
 plt.show()
+
+

@@ -100,12 +100,12 @@ potential = TestPhi4()
 print("Potential at the center:", potential[grid_size // 2, grid_size // 2, grid_size // 2])
 
 # Visualize a slice of the potential field 
-plt.imshow(potential[:, :, grid_size // 2], extent=(-0.5, 0.5, -0.5, 0.5), origin='lower')
-plt.colorbar(label="Potential")
-plt.title("Potential Slice at Z = 0")
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.show()
+#plt.imshow(potential[:, :, grid_size // 2], extent=(-0.5, 0.5, -0.5, 0.5), origin='lower')
+#plt.colorbar(label="Potential")
+#plt.title("Potential Slice at Z = 0")
+#plt.xlabel("X")
+#plt.ylabel("Y")
+#plt.show()
 
 
 def gradient(phi, spacing = 1/32):

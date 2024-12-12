@@ -81,8 +81,9 @@ for i in range (T):
     particles, velocities, phi = xnext(particles, velocities, phi)
 
 plt.plot(Karr, Uarr,".")
-a, b = np.polyfit(Karr[5:25], Uarr[5:25], 1)
+a, b = np.polyfit(Karr, Uarr, 1)
 
 plt.plot(Karr, a*Karr + b, label =f"{a.round(3)} U + {b.round(3)}" )
 plt.legend()
+plt.savefig("GenericUvsV1.png")
 plt.show()

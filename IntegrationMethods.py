@@ -52,3 +52,18 @@ def xnext(x, v, dt):
     #print("x: ", np.shape(x), np.shape(v_new))
     #x_new = x + v_new * dt
     return x_new, v_new
+
+def NetAngularMomentum(particles):
+    R_z = np.array([[0, -1, 0],
+                    [1,  0, 0],
+                    [0,  0, 1]])
+    velocities = particles @ R_z.T
+    
+    magnitudes = np.linalg.norm(velocities, axis=1, keepdims=True)
+    magnitudes[magnitudes == 0] = 1
+    
+    return velocities / magnitudes
+
+    
+    
+    

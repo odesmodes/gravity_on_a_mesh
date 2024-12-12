@@ -190,7 +190,7 @@ def CreateDensityField(center, arr, grid_size):
                     dz = max(0, L - np.abs(distance[2]))
                     
                     #The addition to the density at the vertex from the particle
-                    densityField[i,j,k] += np.abs(dx*dy*dz)/L**3
+                    densityField[i,j,k] += np.abs(dx*dy*dz)
                     
                     if DEBUG: print("dx,dy,dz: ", dx, dy, dz)
                     if DEBUG: print("dv: ", np.abs(dx*dy*dz))

@@ -7,6 +7,7 @@ Created on Wed Dec 11 20:50:32 2024
 """
 import numpy as np
 import InitializePoints
+import PoissonEquation
 import pytest
 
 #UNIT TESTS

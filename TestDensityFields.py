@@ -12,7 +12,9 @@ import numpy as np
 TEST1 = False #Toggle for each test
 TEST2 = False #Toggle for each test
 TEST3 = False #Toggle for each test
-TEST4 = True  #Toggle for each test
+TEST4 = False  #Toggle for each test
+TEST5 = True  #Toggle for each test
+TEST6 = False  #Toggle for each test
 
 center = [0,0,0]
 grid_size = 32
@@ -38,6 +40,22 @@ if TEST4:
     a = .15
     ba = .5
     ca = 2
+    N = 32**3
+    
+    particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
+
+if TEST5:
+    a = .1
+    ba = 1
+    ca = .3
+    N = 32**3
+    
+    particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
+
+if TEST6:
+    a = .1
+    ba = 2
+    ca = .6
     N = 32**3
     
     particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)

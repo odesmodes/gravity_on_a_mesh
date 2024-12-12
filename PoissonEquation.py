@@ -32,7 +32,7 @@ def PoissonsEq(density):
 
  
 def PlotPotential2D(potential, x,y,z, axis, value):
-'''Takes potential and corresponding axes and plots the potential in cross-sectional specified by the input value'''
+    '''Takes potential and corresponding axes and plots the potential in cross-sectional specified by the input value'''
     if axis == 'y':
         extent = [x[0], x[-1], x[0], x[-1]]  # Define the physical coordinates for the plot
         plt.imshow(potential[:, value, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')

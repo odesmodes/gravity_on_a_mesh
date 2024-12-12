@@ -9,11 +9,11 @@ Created on Mon Oct  7 16:40:32 2024
 import InitializePoints
 import numpy as np
 
-TEST1 = False #Toggle for each test
+TEST1 = True #Toggle for each test
 TEST2 = False #Toggle for each test
 TEST3 = False #Toggle for each test
 TEST4 = False  #Toggle for each test
-TEST5 = True  #Toggle for each test
+TEST5 = False  #Toggle for each test
 TEST6 = False  #Toggle for each test
 
 center = [0,0,0]

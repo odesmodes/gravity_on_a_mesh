@@ -23,9 +23,9 @@ import IntegrationMethods
 
 # Parameters
 
-a = .2
-ba = 1
-ca = 1
+a = .15
+ba = .5
+ca = 2
 N = 32**3
 dt = 0.1
 T = 30

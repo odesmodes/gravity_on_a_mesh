@@ -3,6 +3,8 @@ import PoissonEquation
 import numpy as np
 
 
+
+
 center = [0,0,0]
 a = 4
 ba = 1
@@ -19,41 +21,67 @@ N = 32**3
     
 particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
 
-#central point Poisson test 
-testpoint = np.array([0,0,0])
-
-
-arr = particles #
-#arr=np.array([testpoint])
-
-densityField, x,y,z = InitializePoints.CreateDensityField(center,particles, grid_size)
-InitializePoints.plotInitialPoints(arr)
-
-#densityField, x,y,z = InitializePoints.CreateDensityField(center, arr, grid_size)
-#testpotential=PoissonEquation.PoissonsEq(densityField)   
-
+#central point discrete Poisson eq test (no Green's function) 
+def central_potential_test():
+ center = [0,0,0]
+ grid_size = 32
+    
+ x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
+ y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
+ z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]
+    
+#Place one particle at exactly hte middle point of the grid
+ particles = np.array([[x[16],y[16],z[16]]])
+ densityField,_,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
+ potential=PoissonEquation.discretepoisson(densityField)
+ green=PoissonEquation.IsolatedMass(densityField)
+#analytic expression for Poisson's eq:
+ analytic= np.zeros((32,32,32))
+ for i in range(0,32):
+  for j in range(0,32):
+   for k in range(0,32):
+    r2=((16-i)**2 +(16-j)**2 +(16-k)**2)
+    if r2 ==0:
+     analytic[i][j][k]=-32
+    else:
+     analytic[i][j][k]=-32/np.sqrt(r2)
+ print(potential)
+ print(analytic)    
+ print(np.sum(potential-analytic) /32**3) 
+ InitializePoints.PlotTestFields(densityField, x,y,z, grid_size)
+# InitializePoints.PlotTestFields(potential, x,y,z, grid_size)
+# InitializePoints.PlotTestFields(green, x,y,z, grid_size)
+ PoissonEquation.PlotTestPotential(analytic, x,y,z, grid_size)
+ PoissonEquation.PlotTestPotential(potential, x,y,z, grid_size)
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size)
  
-testpotential=PoissonEquation.IsolatedMass(densityField)   
+# assert (not all.(analytic==potential) ) 
+  
+central_potential_test() 
 
-#this creates the new axes for the extended mesh
-x2 = np.linspace(-.5, 1.5, 64, endpoint=True) + center[0]
-y2 = np.linspace(-.5, 1.5, 64, endpoint=True) + center[1]
-z2 = np.linspace(-.5, 1.5, 64, endpoint=True) + center[2]
+     
+#central point discrete Poisson eq test using Green's function convolution
+def centralpoint_potential_green_function_test():
+ center = [0,0,0]
+ grid_size = 32
+    
+ x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
+ y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
+ z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]
 
-#This plots the potential using the density plotter function, so the axis label is wrong
-InitializePoints.PlotTestFields(testpotential, x2, y2, z2, 32)
+#Place one particle at exactly hte middle point of the grid
+ particles = np.array([[x[16],y[16],z[16]]])
+ densityField,_,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
+ potential=PoissonEquation.discretepoisson(densityField)
+    
+    
+   
+    
+#Place one particle at exactly the middle point of the grid
+ particles = np.array([[x[16],y[16],z[16]]])
+ densityField,_,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
+ potential=PoissonEquation.IsolatedMass(densityField) 
 
-
-
-
-
-
-''' 
-particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
-densityField2, x,y,z = InitializePoints.CreateDensityField(center, a, ba, ca, particles, grid_size)
-InitializePoints.plotInitialPoints(arr)
-testpotentialgauss=PoissonEquation.PoissonsEq(densityField)   
-PoissonEquation.PlotPotential2D(testpotentialgauss, x,y,z,'x',int(grid_size/2))
-PoissonEquation.PlotPotential2D(testpotentialgauss, x,y,z,'y', int(grid_size/2))
-PoissonEquation.PlotPotential2D(testpotentialgauss, x,y,z,'z', int(grid_size/2))
-'''
+def spherical_potential_green_function_test():
+ hi=1
+#Potential from two oint particles:

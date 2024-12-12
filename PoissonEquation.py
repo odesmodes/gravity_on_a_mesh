@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 #Section 3
 
-def PoissonsEq(density):
+def discretepoisson(density):
  '''Takes density as an input, solves Fourier transformed version of Poissons eq for a discrete distribution. Multiplies Fourier Transformed density by the approriate factor, and inverse Fourier Transforms result to return solution for potential'''
 #Take fft of density 
  density_dft = sp.fft.fftn(density)
@@ -32,30 +32,36 @@ def PoissonsEq(density):
 
  
 def PlotPotential2D(potential, x,y,z, axis, value):
-    '''Takes potential and corresponding axes and plots the potential in cross-sectional specified by the input value'''
-    if axis == 'y':
-        extent = [x[0], x[-1], x[0], x[-1]]  # Define the physical coordinates for the plot
-        plt.imshow(potential[:, value, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
-        plt.title(f'Potential at Y={y[value]}')
-        plt.ylabel('X-axis')
-        plt.xlabel('Z-axis')
-    elif axis == 'x':
-        extent = [x[0], x[-1], x[0], x[-1]]
-        plt.imshow(potential[value, :, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
-        plt.title(f'Potential Slice at X={x[value]}')
-        plt.ylabel('Y-axis')
-        plt.xlabel('Z-axis')
+ '''Takes potential and corresponding axes and plots the potential in cross-sectional specified by the input value'''
+ if axis == 'y':
+  extent = [x[0], x[-1], x[0], x[-1]]  # Define the physical coordinates for the plot
+  plt.imshow(potential[:, value, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
+  plt.title(f'Potential at Y={y[value]}')
+  plt.ylabel('X-axis')
+  plt.xlabel('Z-axis')
+ elif axis == 'x':
+  extent = [x[0], x[-1], x[0], x[-1]]
+  plt.imshow(potential[value, :, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
+  plt.title(f'Potential Slice at X={x[value]}')
+  plt.ylabel('Y-axis')
+  plt.xlabel('Z-axis')
         
-    elif axis == 'z':
-        extent = [x[0], x[-1], x[0], x[-1]]
-        plt.imshow(potential[:, :, value], origin='lower', cmap='inferno', extent=extent, aspect='auto')
-        plt.title(f'Potential Slice at Z={z[value]}')
-        plt.ylabel('X-axis')
-        plt.xlabel('Y-axis')
+ elif axis == 'z':
+  extent = [x[0], x[-1], x[0], x[-1]]
+  plt.imshow(potential[:, :, value], origin='lower', cmap='inferno', extent=extent, aspect='auto')
+  plt.title(f'Potential Slice at Z={z[value]}')
+  plt.ylabel('X-axis')
+  plt.xlabel('Y-axis')
                 
-    plt.colorbar(label='Potential')
-    plt.savefig(f"2DPotentialPlot{axis}_{value}.png")
-    plt.show()
+ plt.colorbar(label='Potential')
+ plt.savefig(f"2DPotentialPlot{axis}_{value}.png")
+ plt.show()
+
+def PlotTestPotential(potential, x,y,z, grid_size):
+ '''Takes potential and corresponding axes and plots the potential in cross-sectional specified by the input value, for all three axes'''
+ PlotPotential2D(potential, x,y,z, "x", int(grid_size/2))
+ PlotPotential2D(potential, x,y,z, "y", int(grid_size/2))
+ PlotPotential2D(potential, x,y,z, "z", int(grid_size/2))
 
 
 
@@ -73,22 +79,22 @@ def IsolatedMass(density):
   for y in range(0,64):
    for z in range(0,64):
     if x<32:
-     xval=x
+     xval=x/32
     else:
-     xval=(64-x) 
+     xval=(64-x)/32 
     if y<32:
-     yval=y
+     yval=y/32
     else:
-     yval=(64-y)   
+     yval=(64-y)/32  
     if z<32:
-     zval =z
+     zval =z/32
     else:
-     zval=(64-z)
+     zval=(64-z)/32
     r2=(xval**2 +yval**2+zval**2)
     if r2==0:
-     G[x][y][z]=1
+     G[x][y][z]=32
     else: 
-     epsilon = 1
+     epsilon = 0
      G[x][y][z]=1/np.sqrt(r2 + epsilon**2) # To avoid infinite potentials 
 #set the iso_den to density value with in active region     
     if x<32 and y < 32 and z < 32: 

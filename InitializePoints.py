@@ -166,7 +166,7 @@ def CreateDensityField(center, arr, grid_size):
         else: zarr = np.array([zi-1,zi])
         if DEBUG: print("zarr: ", zarr)
         
-        # L is the size of each cell in the mesh grid
+        # L is the size of each cell length in the mesh grid
         L = 1/grid_size
         
         #Calculate the density addition at each vertex determined above
@@ -190,7 +190,7 @@ def CreateDensityField(center, arr, grid_size):
                     dz = max(0, L - np.abs(distance[2]))
                     
                     #The addition to the density at the vertex from the particle
-                    densityField[i,j,k] += np.abs(dx*dy*dz)
+                    densityField[i,j,k] += np.abs(dx*dy*dz)/L**3
                     
                     if DEBUG: print("dx,dy,dz: ", dx, dy, dz)
                     if DEBUG: print("dv: ", np.abs(dx*dy*dz))

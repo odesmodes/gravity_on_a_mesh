@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 #Section 3
 
 def PoissonsEq(density):
- '''Takes density as an input, solves Poissons eq using Fourier Transformed density, inverse Fourier Transforms result to return solution for potential'''
+ '''Takes density as an input, solves Fourier transformed version of Poissons eq for a discrete distribution. Multiplies Fourier Transformed density by the approriate factor, and inverse Fourier Transforms result to return solution for potential'''
 #Take fft of density 
  density_dft = sp.fft.fftn(density)
 
@@ -16,8 +16,9 @@ def PoissonsEq(density):
  for x in range(0,len(density_dft)):
   for y in range(0,len(density_dft[x])):
    for z in range(0,len(density_dft[x][y])):
+#multiply by factor (discrete equivalent of k**-2)   
     if 2*(np.cos(2*x*np.pi/len(density_dft))+np.cos(2*y*np.pi/len(density_dft[x]))+np.cos(2*z*np.pi/len(density_dft[x][y])) -3)==0:
-    #if expression is 0, set potential dft to 0
+#if expression is 0, set potential dft to 0
      potential_dft[x][y][z]=0
     else: 
      potential_dft[x][y][z]=1/(2*(np.cos(2*x*np.pi/len(density_dft))+np.cos(2*y*np.pi/len(density_dft[x]))+np.cos(2*z*np.pi/len(density_dft[x][y])) -3))*4*np.pi*density_dft[x][y][z]
@@ -31,6 +32,7 @@ def PoissonsEq(density):
 
  
 def PlotPotential2D(potential, x,y,z, axis, value):
+'''Takes potential and corresponding axes and plots the potential in cross-sectional specified by the input value'''
     if axis == 'y':
         extent = [x[0], x[-1], x[0], x[-1]]  # Define the physical coordinates for the plot
         plt.imshow(potential[:, value, :], origin='lower', cmap='inferno', extent=extent, aspect='auto')
@@ -58,7 +60,8 @@ def PlotPotential2D(potential, x,y,z, axis, value):
 
 
 def IsolatedMass(density):
- """Solves Poisson's equation for an isolated mass distribution using a convolution of the Fourier transforms of the mass m"""
+ """Solves Poisson's equation for an isolated mass distribution using a convolution of the Fourier transforms of the density and a Green's function prepared on an extended mesh;
+  Takes density field as input and returns gravitational potential"""
 #create extended mesh to isolate mass 
  iso_den=np.zeros((64,64,64))
 

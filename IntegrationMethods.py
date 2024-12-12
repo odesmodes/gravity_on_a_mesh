@@ -42,15 +42,20 @@ def xnext(x, v, dt):
     # Calculate gradArr with new distribution
 
     # VERLET METHOD FROM WIKIPEDIA
+    
     F_old = F(x, gradArr)
     x_new = x + v * dt + 0.5 * F_old * dt**2
     gradArr_new = gradient(phi)
     F_new = F(x_new, gradArr_new)
     v_new = v + 0.5 * (F_old + F_new) * dt
-
-    #v_new = v + F(x, gradArr) * dt/2
+    
+    
+    #Verlet METHOD from CLASS NOTES
+    """
+    v_new = v + F(x, gradArr) * dt/2
     #print("x: ", np.shape(x), np.shape(v_new))
-    #x_new = x + v_new * dt
+    x_new = x + v_new * dt
+    """
     return x_new, v_new
 
 def NetAngularMomentum(particles):

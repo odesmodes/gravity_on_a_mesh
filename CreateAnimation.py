@@ -19,9 +19,9 @@ center = [0,0,0]
 a = .2
 ba = 1
 ca = 1
-N = 32**3
+N = 15
 grid_size = 32
-dt = .1
+dt = .01
 
 numStep = 1
 particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
@@ -56,7 +56,7 @@ ax.set_title("Exploring The Physics Of Gravitational Collapse")
 
 # Animate
 ani = animation.FuncAnimation(fig, update, frames=50, interval=100, blit=False)
-ani.save('grav_collapse.mp4', fps=5, extra_args=['-vcodec', 'libx264'])
-#plt.show()
+#ani.save('Vgrav_collapse.mp4', fps=5)
+plt.show()
 
 

@@ -23,12 +23,12 @@ import IntegrationMethods
 
 # Parameters
 
-a = .15
-ba = .5
-ca = 2
+a = .2
+ba = 1
+ca = 1
 N = 32**3
-dt = 0.1
-T = 30
+dt = 0.0001
+T = 40
 
 center = [0,0,0]
 grid_size = 32
@@ -79,11 +79,23 @@ for i in range (T):
     Uarr[i] = U(particles, phi)
     Karr[i] = K(velocities)
     particles, velocities, phi = xnext(particles, velocities, phi)
+    #print(np.min(particles2-particles)/np.max(velocities))
+    #particles = particles2
 
 plt.plot(Karr, Uarr,".")
 a, b = np.polyfit(Karr, Uarr, 1)
 
-plt.plot(Karr, a*Karr + b, label =f"{a.round(3)} U + {b.round(3)}" )
+plt.plot(Karr, a*Karr + b, label =f"Kinetic = {a.round(3)} Potential + {b.round(2)}" )
+plt.xlabel("Kinetic Energy (J)")
+plt.ylabel("Potential Energy (J)")
 plt.legend()
 plt.savefig("GenericUvsV1.png")
+plt.show()
+
+# CODE TO TEST CONSERVATION OF ENERGY
+arr = Uarr+Karr
+tarr = np.arange(0,T*dt,dt)
+plt.plot(tarr,arr)
+plt.xlabel("time")
+plt.ylabel("total energy")
 plt.show()

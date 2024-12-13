@@ -3,11 +3,8 @@ import PoissonEquation
 import numpy as np
 
 
-    
-particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N)
-
 #central point discrete Poisson eq test 
-def central_potential_test():
+def central_potential_test(): 
  center = [0,0,0]
  grid_size = 32
 
@@ -33,17 +30,15 @@ def central_potential_test():
     else:
      analytic[i][j][k]=-32/np.sqrt(r2)
 
- #InitializePoints.PlotTestFields(densityField, x,y,z, grid_size)
-# InitializePoints.PlotTestFields(potential, x,y,z, grid_size)
-# InitializePoints.PlotTestFields(green, x,y,z, grid_size)
- #PoissonEquation.PlotTestPotential(analytic, x,y,z, grid_size)
- #PoissonEquation.PlotTestPotential(potential, x,y,z, grid_size)
- #PoissonEquation.PlotTestPotential(green, x,y,z, grid_size)
+#Plot (comment out to skip)
+ PoissonEquation.PlotTestPotential(analytic, x,y,z, grid_size)
+ PoissonEquation.PlotTestPotential(potential, x,y,z, grid_size)
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size)
  
  #Test that analytic solution and green's function convolution are nearly identical
- assert not (np.abs(analytic-potential)<1e-7).all()
- 
- assert (np.abs(analytic- green)<1e-7).all()
+ assert not (np.abs(analytic-potential)<1e-8).all()
+ assert (np.abs(analytic- green)<1e-8).all()
+
 
 
 #Spherical potential test
@@ -86,24 +81,19 @@ def spherical_potential_green_function_test():
      else:
       particle_pot[i][j][k]=-32/np.sqrt(r2)
   analytic += particle_pot     
-
-
- #InitializePoints.PlotTestFields(densityField, x,y,z, grid_size)
-# InitializePoints.PlotTestFields(potential, x,y,z, grid_size)
-# InitializePoints.PlotTestFields(green, x,y,z, grid_size)
- #PoissonEquation.PlotTestPotential(analytic, x,y,z, grid_size)
- ##PoissonEquation.PlotTestPotential(potential, x,y,z, grid_size)
- PoissonEquation.PlotTestPotential(green, x,y,z, grid_size)
  
-# print(green)
-# print(analytic) #
+# print difference to find error  
  print(np.abs(analytic- green)) 
  
+#Plot (comment out to skip) 
+ PoissonEquation.PlotTestPotential(analytic, x,y,z, grid_size)
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size) 
+ 
  #Test that analytic solution and green's function convolution are nearly identical
- assert (np.abs(analytic - green)<1e-7).all()
+ assert (np.abs(analytic - green)<1e-8).all()
 
  
- 
+
 #Potential from two point particles
 def two_part_potential_green_function_test():
  center = [0,0,0]
@@ -140,35 +130,86 @@ def two_part_potential_green_function_test():
    for j in range(0,32):
     for k in range(0,32):
      r2=((i-particle[0])**2 +(j-particle[1])**2 +(k-particle[2])**2)
-     #   r2=((dens[0]-x[i])**2 +(dens[1]-y[j])**2 +(dens[2]-z[k])**2)
      if r2 ==0:
       particle_pot[i][j][k]=-32
      else:
       particle_pot[i][j][k]=-32/np.sqrt(r2)
   analytic += particle_pot     
 
-
- #InitializePoints.PlotTestFields(densityField, x,y,z, grid_size)
-# InitializePoints.PlotTestFields(potential, x,y,z, grid_size)
-# InitializePoints.PlotTestFields(green, x,y,z, grid_size)
+#Plot (comment out to skip)
  PoissonEquation.PlotTestPotential(analytic, x,y,z, grid_size)
- #PoissonEquation.PlotTestPotential(potential, x,y,z, grid_size)
- PoissonEquation.PlotTestPotential(green, x,y,z, grid_size)
- 
- #print(green)
- #print(analytic) #
- #print(np.abs(analytic- green)) 
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size) 
  
  #Test that analytic solution and green's function convolution are nearly identical
- assert (np.abs(analytic - green)<1e-7).all()
+ assert (np.abs(analytic - green)<1e-8).all()
 
-# assert (not all.(analytic==potential) ) 
+ 
+def gauss1():
+#define Gauss parameters
+ center = [0,0,0]
+ grid_size = 32
+ a = .2
+ ba = 1
+ ca = 1
+ N = 32**3
+   
+    
+ x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
+ y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
+ z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]  
+   
+ particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N) 
+ densityField,_,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
+ green=PoissonEquation.IsolatedMass(densityField)
+#Plot  
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size) 
+ 
+def gauss2():
+#define Gauss parameters
+ center = [0,0,0]
+ grid_size = 32
+ a = .15
+ ba = .5
+ ca = 2
+ N = 32**3   
 
+ x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
+ y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
+ z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]  
+  
+ particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N) 
+ densityField,_,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
+ green=PoissonEquation.IsolatedMass(densityField)
+#Plot  
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size) 
+ 
+def gauss3():
+#define Gauss parameters
+ center = [0,0,0]
+ grid_size = 32
+ a = .1
+ ba = 1
+ ca = .3
+ N = 32**3   
+
+ x = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[0]
+ y = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[1]
+ z = np.linspace(-0.5, 0.5, grid_size, endpoint=True) + center[2]  
+     
+ particles = InitializePoints.initializeGaussianPoints(center, a, ba, ca, N) 
+ densityField,_,_,_ = InitializePoints.CreateDensityField(center, particles, grid_size)
+ green=PoissonEquation.IsolatedMass(densityField)
+#Plot  
+ PoissonEquation.PlotTestPotential(green, x,y,z, grid_size) 
+
+#Call statments (comment out as needed) 
 
 central_potential_test() 
 spherical_potential_green_function_test()
 two_part_potential_green_function_test()
 
-
+gauss1()
+gauss2()
+gauss3()
 
 

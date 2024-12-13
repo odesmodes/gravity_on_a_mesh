@@ -21,7 +21,7 @@ def discretepoisson(density):
 #if expression is 0, set potential dft to 0
      potential_dft[x][y][z]=0
     else: 
-     potential_dft[x][y][z]=1/(2*(np.cos(2*x*np.pi/len(density_dft))+np.cos(2*y*np.pi/len(density_dft[x]))+np.cos(2*z*np.pi/len(density_dft[x][y])) -3))*4*np.pi*density_dft[x][y][z]
+     potential_dft[x][y][z]=1/(32**2*2*(np.cos(2*x*np.pi/len(density_dft))+np.cos(2*y*np.pi/len(density_dft[x]))+np.cos(2*z*np.pi/len(density_dft[x][y])) -3))*4*np.pi*density_dft[x][y][z]
     
 #take inverse FT of potental FT
  potential_ift = sp.fft.ifftn(potential_dft)
@@ -94,8 +94,7 @@ def IsolatedMass(density):
     if r2==0:
      G[x][y][z]=32
     else: 
-     epsilon = 0
-     G[x][y][z]=1/np.sqrt(r2 + epsilon**2) # To avoid infinite potentials 
+     G[x][y][z]=1/np.sqrt(r2)  
 #set the iso_den to density value with in active region     
     if x<32 and y < 32 and z < 32: 
      iso_den[x][y][z]=density[x][y][z]   

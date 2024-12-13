@@ -19,6 +19,7 @@ import numpy as np
 import InitializePoints
 import PoissonEquation
 import IntegrationMethods
+from scipy.interpolate import RegularGridInterpolator
 
 
 # Parameters
@@ -27,8 +28,8 @@ a = .2
 ba = 1
 ca = 1
 N = 32**3
-dt = 0.0001
-T = 40
+dt = 0.00001
+T = 10000
 
 center = [0,0,0]
 grid_size = 32
@@ -62,11 +63,16 @@ def xnext(x, v, phi, dt=dt):
 
     return x_new, v_new, phi
 
-def U(particles, phi, spacing = 1/32):
-    indices = ((particles + 0.5) / spacing).astype(int)
-    U = 0
-    U += np.linalg.norm(phi[indices])
-    return -U
+def U(particles, phi, grid_spacing=1/32, grid_origin=-0.5):
+    # Create coordinates for the grid
+    grid_points = np.linspace(grid_origin, grid_origin + grid_spacing * phi.shape[0], phi.shape[0])
+    interp_func = RegularGridInterpolator((grid_points, grid_points, grid_points), phi, bounds_error=False, fill_value=0)
+    
+    # Interpolate phi at particle positions
+    potential_values = interp_func(particles)
+    
+    # Sum potential energy contributions
+    return np.sum(potential_values)
 
 def K(velocities):
     return np.sum(velocities**2)/2
@@ -85,17 +91,20 @@ for i in range (T):
 plt.plot(Karr, Uarr,".")
 a, b = np.polyfit(Karr, Uarr, 1)
 
-plt.plot(Karr, a*Karr + b, label =f"Kinetic = {a.round(3)} Potential + {b.round(2)}" )
+plt.plot(Karr, a*Karr + b, label =f"Potential = {a.round(3)} Kinetic + {b.round(2)}" )
 plt.xlabel("Kinetic Energy (J)")
 plt.ylabel("Potential Energy (J)")
 plt.legend()
-plt.savefig("GenericUvsV1.png")
+plt.savefig("GenericUvsV.png")
 plt.show()
 
 # CODE TO TEST CONSERVATION OF ENERGY
 arr = Uarr+Karr
 tarr = np.arange(0,T*dt,dt)
-plt.plot(tarr,arr)
+plt.plot(tarr,arr, ".", label = "total energy")
+#plt.plot(tarr, Karr, ".", label = "kinetic energy")
 plt.xlabel("time")
 plt.ylabel("total energy")
+plt.legend()
 plt.show()
+print(dt)

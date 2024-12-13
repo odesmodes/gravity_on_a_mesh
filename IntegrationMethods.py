@@ -87,7 +87,8 @@ def MassWithinRadius(densityField,r, tol = 1e-6):
     within_radius = (distance_sq <= r**2 + tol)
 
     # Calculate total mass (density * volume) for cells within the radius
-    total_mass = np.sum(densityField[within_radius])
+    h = 1/grid_size
+    total_mass = np.sum(densityField[within_radius]) * h**3
 
     return total_mass
 
@@ -100,10 +101,13 @@ def NoEvolution(particles):
     velocities = np.empty_like(particles)
     
     for i in range (np.shape(particles)[0]):
-        ptcl = particles[i]
-        vhat = np.cross(ptcl, refVec)/distance[0]
-        if np.allclose(vhat, np.array([0, 0, 0])): vhat = np.cross(ptcl, refVec2)
-        velocities[i] = MassWithinRadius(densityField,distance[i]) / distance[i] * vhat
+        if (distance[i] == 0):
+            velocities[i] = np.array([0,0,0])
+        else:
+            ptcl = particles[i]
+            vhat = np.cross(ptcl, refVec)/distance[i]
+            if np.allclose(vhat, np.array([0, 0, 0])): vhat = np.cross(ptcl, refVec2)
+            velocities[i] = MassWithinRadius(densityField,distance[i]) / distance[i] * vhat
     
     return velocities
     

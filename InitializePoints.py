@@ -260,15 +260,20 @@ def PlotDensityField2D(densityField, x, y, z, axis, value):
     if axis == 'y':
         extent = [x[0], x[-1], x[0], x[-1]]
         plt.imshow(densityField[:,value,:], extent=extent)
+        plt.xlabel('x-axis')
+        plt.ylabel('z-axis')
     elif axis == 'x':
         extent = [y[0], y[-1], z[0], z[-1]]
         plt.imshow(densityField[value,:,:], extent=extent)
+        plt.xlabel('y-axis')
+        plt.ylabel('z-axis')
     elif axis == 'z':
         extent = [x[0], x[-1], y[0], y[-1]]
         plt.imshow(densityField[:,:,value], extent=extent)
+        plt.xlabel('x-axis')
+        plt.ylabel('y-axis')
+        
     plt.colorbar(label='Density')
-    plt.xlabel(f'{axis}-axis')
-    plt.ylabel('Other axis')
     plt.title(f'Density Field along {axis}-axis at {value}')
     plt.show()
 

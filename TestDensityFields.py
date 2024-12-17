@@ -10,10 +10,10 @@ import InitializePoints
 import numpy as np
 
 # Toggle variables to switch between different tests
-TEST1 = False  # Toggle for Test 1
+TEST1 = True  # Toggle for Test 1
 TEST2 = False  # Toggle for Test 2
 TEST3 = False  # Toggle for Test 3
-TEST4 = True   # Toggle for Test 4
+TEST4 = False   # Toggle for Test 4
 TEST5 = False  # Toggle for Test 5
 TEST6 = False  # Toggle for Test 6
 

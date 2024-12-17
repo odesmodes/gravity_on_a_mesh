@@ -271,3 +271,67 @@ def PlotDensityField2D(densityField, x, y, z, axis, value):
     plt.ylabel('Other axis')
     plt.title(f'Density Field along {axis}-axis at {value}')
     plt.show()
+
+def PlotDensityField1D(densityField, x, y, z, plane, value1, value2):
+    """
+    Plot a 1D slice of the density field along a specified plane.
+
+    This function generates a 1D plot of the density field by slicing it along the specified plane 
+    ('xy', 'yz', or 'zx') at specific grid coordinates defined by `value1` and `value2`.
+
+    Parameters:
+    densityField (np.ndarray): A 3D array representing the density field.
+    x (np.ndarray): The x-coordinate grid.
+    y (np.ndarray): The y-coordinate grid.
+    z (np.ndarray): The z-coordinate grid.
+    plane (str): The plane to slice along ('xy', 'yz', or 'zx').
+    value1 (int): The first index used for slicing in the chosen plane.
+    value2 (int): The second index used for slicing in the chosen plane.
+
+    Returns:
+    None: Displays the plot of the sliced density field.
+    """
+    if plane == 'xy':
+        plt.plot(z, densityField[value1, value2, :])
+        plt.title(f"Density field with x = {round(value1,3)} and y = {round(value2,3)}")
+        plt.xlabel("Z-axis")
+        plt.ylabel("Density")
+    elif plane == 'yz':
+        plt.plot(x, densityField[:, value1, value2])
+        plt.title(f"Density field with y = {round(value1,3)} and z = {round(value2,3)}")
+        plt.xlabel("X-axis")
+        plt.ylabel("Density")
+    elif plane == 'zx':
+        plt.plot(y, densityField[value2, :, value1])
+        plt.title(f"Density field with x = {round(value2,3)} and z = {round(value1, 3)}")    
+        plt.xlabel("Y-axis")
+        plt.ylabel("Density")
+        
+    #plt.savefig(f"TestDensityPlots/1DDensityPlot{plane}_{round(value1,3)}_{round(value2,3)}.png")
+    plt.show()
+
+
+def PlotTestFields(densityField, x, y, z, grid_size):
+    """
+    Plot multiple slices and 2D projections of the density field.
+
+    This function generates 1D slices and 2D projections of the density field at the center of the grid
+    along the 'xy', 'yz', and 'zx' planes, and then plots 2D projections along the x, y, and z axes.
+
+    Parameters:
+    densityField (np.ndarray): A 3D array representing the density field.
+    x (np.ndarray): The x-coordinate grid.
+    y (np.ndarray): The y-coordinate grid.
+    z (np.ndarray): The z-coordinate grid.
+    grid_size (int): The size of the grid, used to define the center for plotting.
+
+    Returns:
+    None: Displays multiple plots of the density field.
+    """
+    PlotDensityField1D(densityField, x, y, z, 'xy', int(grid_size/2), int(grid_size/2))
+    PlotDensityField1D(densityField, x, y, z, 'yz', int(grid_size/2), int(grid_size/2))
+    PlotDensityField1D(densityField, x, y, z, 'zx', int(grid_size/2), int(grid_size/2))
+    
+    PlotDensityField2D(densityField, x, y, z, "x", int(grid_size/2))
+    PlotDensityField2D(densityField, x, y, z, "y", int(grid_size/2))
+    PlotDensityField2D(densityField, x, y, z, "z", int(grid_size/2))

@@ -19,7 +19,7 @@ center = [0,0,0]  # Center of the particle distribution
 a = .2             # Semi-major axis for Gaussian distribution
 ba = 1             # Axis ratio for the second axis
 ca = 1             # Axis ratio for the third axis
-usedN = 15             # Number of particles to be generated
+N = 15             # Number of particles to be generated
 grid_size = 32     # Grid size for density field
 dt = .01           # Time step for the simulation
 
